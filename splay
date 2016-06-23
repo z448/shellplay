@@ -1,0 +1,43 @@
+#!/usr/bin/env perl
+
+use Encode;
+use Data::Dumper;
+use Time::HiRes qw( usleep );
+use IO::Handle;
+use Getopt::Std;
+STDOUT->autoflush(1);
+use open qw<:encoding(UTF-8)>;
+
+my @file = ();
+getopts('f:', \%switch);
+
+if(defined $switch{f}){
+    open(my $fh,"<",$switch{f}) || die "cant open $switch{f}: $!";
+    for(<$fh>){ push @file, $_ }
+} else { @file = <DATA> }
+
+
+sub printer {
+    my $line = shift;
+    my @line = split(//, $line);
+}
+
+
+for(@file){
+    if($_ =~ /^vi/m){ print "\n\nshellplay does not support editors\n\n" and die }
+    my @command = printer($_);
+    for(@command){
+        print "$_";
+        usleep(80000);
+    }
+        print `$_`;
+        usleep(80000);
+}
+
+
+__DATA__
+# create file  with your shell commands 
+# use "splay -f <file>" to repaly and execute these commands
+# note that shellplay doesnt support tools which output is not terminal like editors (vim, nano etc.)
+# see https://github.com/z448/shellplay for updates
+#
