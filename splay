@@ -8,6 +8,12 @@ use Getopt::Std;
 STDOUT->autoflush(1);
 use open qw<:encoding(UTF-8)>;
 
+=head1
+
+App::shellplay - replay and execute commands from file
+
+=cut
+
 my @file = ();
 getopts('f:', \%switch);
 
@@ -35,9 +41,22 @@ for(@file){
 }
 
 
-__DATA__
-# create file  with your shell commands 
-# use "splay -f <file>" to repaly and execute these commands
-# note that shellplay doesnt support tools which output is not terminal like editors (vim, nano etc.)
-# see https://github.com/z448/shellplay for updates
-#
+
+=head1 SYNOPSIS
+
+`splay` command will write and execute commands from prepared file. Usefull for presentations and creating gif/video tutorials.
+
+=head1 USAGE
+
+Create file  with your shell commands. 
+
+use C<splay -f /path/to/file>" to repaly and execute commands in file
+
+Note that shellplay doesnt support tools which output is not terminal like editors (vim, nano etc.)
+
+=head1 GIF
+
+L<https://github.com/z448/shellplay>
+
+=cut
+
