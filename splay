@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
-
+# todo: record terminal output with tee for replay 
+# todo: command that print range of lines in file
 use Encode;
 use Data::Dumper;
 use Time::HiRes qw( usleep );
@@ -59,4 +60,5 @@ Note that shellplay doesnt support tools which output is not terminal like edito
 L<https://github.com/z448/shellplay>
 
 =cut
+
 
