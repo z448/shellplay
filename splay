@@ -1,11 +1,11 @@
 #!/usr/bin/env perl
 # todo: record terminal output with tee for replay 
 # todo: command that print range of lines in file
-use Encode;
-use Data::Dumper;
 use Time::HiRes qw( usleep );
 use IO::Handle;
 use Getopt::Std;
+use Cwd;
+use Sys::Hostname;
 STDOUT->autoflush(1);
 use open qw<:encoding(UTF-8)>;
 
@@ -15,43 +15,61 @@ App::shellplay - replay and execute commands from file
 
 =cut
 
-my @file = ();
-getopts('f:', \%switch);
+my @line = ();
+getopts('f:t:', \%opt);
 
-if(defined $switch{f}){
-    open(my $fh,"<",$switch{f}) || die "cant open $switch{f}: $!";
-    for(<$fh>){ push @file, $_ }
-} else { @file = <DATA> }
+my $time = $opt{t} || 80000;
 
+if(defined $opt{f}){
+    open(my $fh,'<',$opt{f});
+    for(<$fh>){ push @line, $_ }
+    close $fh;
+}
 
 sub printer {
     my $line = shift;
-    my @line = split(//, $line);
+    my @char = split(//, $line);
 }
 
 
-for(@file){
+sub ps1{
+    my $cwd = getcwd();
+    my $id = getlogin() || getpwuid($<);
+    my $host = hostname;
+    my $ps1 = $id . '@' . $host . ':' . $cwd . ' ';
+}
+
+
+for my $line (@line){
     if($_ =~ /^vi/m){ print "\n\nshellplay does not support editors\n\n" and die }
-    my @command = printer($_);
-    for(@command){
-        print "$_";
-        usleep(80000);
+    print ps1();
+    my @command = printer($line);
+    for my $char(@command){
+        print "$char";
+        usleep($time);
     }
-        print `$_`;
-        usleep(80000);
+        print `$line`;
+	#usleep($time);
+	if( $line =~ /cd\s+(.*)/ ){ chdir $1 }
+	if( $line =~ /cd$/ ){ chdir $ENV{HOME} }
+	if( $line =~ /cd\s+~/ ){
+		chomp($line);
+		$line =~ s/cd\s+~(.*)/$ENV{HOME}$1/g;
+		chdir $line;
+	}
 }
 
 
 
 =head1 SYNOPSIS
 
-`splay` command will write and execute commands from prepared file. Usefull for presentations and creating gif/video tutorials.
+`splay` command will write and execute commands from prepared file.
 
-=head1 USAGE
+=head1 EXAMPLES
 
-Create file  with your shell commands. 
+C<splay -f /path/to/file>" to replay and execute commands in file
 
-use C<splay -f /path/to/file>" to repaly and execute commands in file
+C<splay -t 50000 -f /path/to/file>" to set time delay of each charater typed and replay and execute commands in file 
 
 Note that shellplay doesnt support tools which output is not terminal like editors (vim, nano etc.)
 
