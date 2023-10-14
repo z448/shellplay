@@ -1,10 +1,10 @@
 # SHELLPLAY
 
-Replay and execute commands from file.
+Type and execute commands from file.
 
 # SYNOPSIS
 
-`splay` command will write and execute commands from prepared file. Usefull for presentations and creating gif/video tutorials.
+`splay` command will type and execute commands from prepared file. Usefull for presentations and creating gif/video tutorials.
 
 # GIF
 
@@ -16,14 +16,14 @@ Replay and execute commands from file.
 # clone repository
 git clone https://github.com/z448/shellplay
 cd shellplay
-source env.sh
+cp ./splay /usr/bin
 ```
 
 # USAGE
 
 ```bash
-# Create file  with your shell commands.
-splay -f /path/to/file
+# Create file  with your shell commands then play them with splay.
+splay /path/to/file
 ```
 
 Note that shellplay doesnt support tools which output is not terminal like editors (vim, nano etc.)

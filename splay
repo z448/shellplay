@@ -9,22 +9,21 @@ use Sys::Hostname;
 STDOUT->autoflush(1);
 use open qw<:encoding(UTF-8)>;
 
-=head1
 
-App::shellplay - replay and execute commands from file
-
-=cut
+our $VERSION = "v1.0.1";
 
 my @line = ();
-getopts('f:t:', \%opt);
+getopts('f:t:vh', \%opt);
 
 my $time = $opt{t} || 80000;
+my $file = $opt{f} || $ARGV[0];
 
-if(defined $opt{f}){
-    open(my $fh,'<',$opt{f});
-    for(<$fh>){ push @line, $_ }
-    close $fh;
-}
+print "$VERSION\n" and exit if $opt{v};
+print help() and exit if $opt{h};
+
+open(my $fh, '<', $file) || die "Can't open file $file: $!";
+for(<$fh>){ push @line, $_ }
+close $fh;
 
 sub printer {
     my $line = shift;
@@ -44,12 +43,12 @@ for my $line (@line){
     if($_ =~ /^vi/m){ print "\n\nshellplay does not support editors\n\n" and die }
     print ps1();
     my @command = printer($line);
+    usleep(300000) if $line =~ /^$/;
     for my $char(@command){
         print "$char";
         usleep($time);
     }
-        print `$line`;
-	#usleep($time);
+    print `$line`;
 	if( $line =~ /cd\s+(.*)/ ){ chdir $1 }
 	if( $line =~ /cd$/ ){ chdir $ENV{HOME} }
 	if( $line =~ /cd\s+~/ ){
@@ -60,18 +59,47 @@ for my $line (@line){
 }
 
 
+sub help {
+    my $help = <<'END_HELP';
+splay - type and execute commands from file
+
+    "-v" see version
+    "-t" delay in microseconds between each typed character
+END_HELP
+}
+
+
+=encoding utf8
+
+=head1 NAME
+
+splay - type and execute commands from file
+
+=head1 VERSION
+
+This document describes splay version 1.0.1
 
 =head1 SYNOPSIS
 
-`splay` command will write and execute commands from prepared file.
+=over 4
+
+=item splay will type and execute commands from prepared file. By default there is 80000 microseconds delay between each typed character, to change that use -t option.
+
+=over 4
+
+=item C<-v> see version
+
+=item C<-t> delay in microseconds between each typen character
+
+=item C<-h> see help
 
 =head1 EXAMPLES
 
-C<splay -f /path/to/file>" to replay and execute commands in file
+C<splay /path/to/file> to replay and execute commands in file
 
-C<splay -t 50000 -f /path/to/file>" to set time delay of each charater typed and replay and execute commands in file 
+C<splay -t 50000 /path/to/file> to set delay 50000 microseconds between each typed character
 
-Note that shellplay doesnt support tools which output is not terminal like editors (vim, nano etc.)
+splay doesn't support tools which output is not terminal like editors (vim, nano etc.)
 
 =head1 GIF
 
