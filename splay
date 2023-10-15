@@ -33,9 +33,12 @@ sub printer {
 
 sub ps1{
     my $cwd = getcwd();
-    my $id = getlogin() || getpwuid($<);
+    my $id = getpwuid($<);
+    #my $id = getlogin() || getpwuid($<);
     my $host = hostname;
-    my $ps1 = $id . '@' . $host . ':' . $cwd . ' ';
+    my $end = '$';
+    $end = '#' if $id eq 'root';
+    my $ps1 = $id . '@' . $host . ':' . $cwd . $end . ' ';
 }
 
 
