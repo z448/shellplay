@@ -16,7 +16,9 @@ Type and execute commands from file.
 # clone repository
 git clone https://github.com/z448/shellplay
 cd shellplay
-cp ./splay /usr/bin
+perl Makefile.PL
+make
+make install
 ```
 
 # USAGE
